@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<a title="Facebook page opens in new window" href="/" target="_blank" class="facebook"><span class="soc-font-icon"></span><span class="screen-reader-text">Facebook page opens in new window</span></a>
 		</div>
 
-		<div class="custom-footer-content-column bordered-item footer-logo"><a href="https://paperstories.eu/"><img class=" preload-me" src="https://paperstories.test.tk/wp-content/uploads/2022/02/paperstories-logo.png" srcset="https://paperstories.test.tk/wp-content/uploads/2022/02/paperstories-logo.png 300w" sizes="300px" alt="Paper Stories" width="300" height="78"></a>
+		<div class="custom-footer-content-column bordered-item footer-logo"><a href="/"><img class=" preload-me" src="/wp-content/uploads/2022/02/paperstories-logo.png" srcset="/wp-content/uploads/2022/02/paperstories-logo.png 300w" sizes="300px" alt="Paper Stories" width="300" height="78"></a>
 		</div>
 
 		<div class="custom-footer-content-column footer-contact">
