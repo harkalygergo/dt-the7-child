@@ -1,5 +1,18 @@
 <?php
 
+// TODO
+add_action('init', function()
+{
+	if(! is_admin() && $GLOBALS['pagenow'] !== 'wp-login.php') {
+
+		if (! is_user_logged_in()) {
+			wp_redirect( 'http://www.paperstories.eu');
+			exit;
+		}
+
+	}
+});
+
 add_action( 'wp_enqueue_scripts', 'theseven_child_scripts');
 function theseven_child_scripts() {
    wp_enqueue_script( 'child-script', get_stylesheet_directory_uri() . '/js/scripts.js', array('jquery'), false, true);
@@ -427,7 +440,7 @@ function woocommerce_product_info($atts) {
    $oldalak = get_field('szerkesztheto_oldalak');
    $online = get_field('online_szerkesztes');
 
-   echo '<div class="prod-info-box"><span>INFORMÁCIÓ</span><ul><li>Méret: '. $meret .'</li><li>Papír: '. $papir .'</li><li>Szerkeszthető: '. $oldalak .'</li><li>Szerkesztési díj: '. $online .'</li></ul></div>';
+   echo '<div class="prod-info-box"><span>INFORMÁCIÓ</span><ul><li>Méret: '. $meret .'</li><li>Papír: '. $papir .'</li><li>Szerkeszthető: '. $oldalak .'</li><li>Online szerkesztés díjtalan</li></ul></div>';
 }
 add_action( 'woocommerce_single_product_summary', 'woocommerce_product_info', 50 );
 

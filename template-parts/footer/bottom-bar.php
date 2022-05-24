@@ -15,11 +15,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="custom-footer-content">
 	<div class="custom-footer-content-row">
 		<div class="custom-footer-content-column social-media">
-			<a title="Instagram page opens in new window" href="/" target="_blank" class="instagram"><span class="soc-font-icon"></span><span class="screen-reader-text">Instagram page opens in new window</span></a>
+			<a title="Instagram page opens in new window" href="https://www.instagram.com/paperstories.hu/" target="_blank" class="instagram"><span class="soc-font-icon"></span><span class="screen-reader-text">Instagram page opens in new window</span></a>
 
-			<a title="Pinterest page opens in new window" href="/" target="_blank" class="pinterest"><span class="soc-font-icon"></span><span class="screen-reader-text">Pinterest page opens in new window</span></a>
+			<!--a title="Pinterest page opens in new window" href="/" target="_blank" class="pinterest"><span class="soc-font-icon"></span><span class="screen-reader-text">Pinterest page opens in new window</span></a-->
 
-			<a title="Facebook page opens in new window" href="/" target="_blank" class="facebook"><span class="soc-font-icon"></span><span class="screen-reader-text">Facebook page opens in new window</span></a>
+			<a title="Facebook page opens in new window" href="https://www.facebook.com/paperstories.hu" target="_blank" class="facebook"><span class="soc-font-icon"></span><span class="screen-reader-text">Facebook page opens in new window</span></a>
 		</div>
 
 		<div class="custom-footer-content-column bordered-item footer-logo"><a href="/"><img class=" preload-me" src="/wp-content/uploads/2022/02/paperstories-logo.png" srcset="/wp-content/uploads/2022/02/paperstories-logo.png 300w" sizes="300px" alt="Paper Stories" width="300" height="78"></a>
@@ -36,7 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<img src="/wp-content/uploads/2022/02/maestro-icon.svg" alt="">
 		<img src="/wp-content/uploads/2022/02/paypal-icon.svg" alt="">
 		<img src="/wp-content/uploads/2022/02/barion_logo.svg" alt="">
-		<img src="/wp-content/uploads/2022/02/simplepay_logo.svg" alt="">
+		<!--img src="/wp-content/uploads/2022/02/simplepay_logo.svg" alt=""-->
 	</div>
 </div>
 <!-- !Bottom-bar -->
