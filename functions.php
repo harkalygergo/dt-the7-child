@@ -1,17 +1,66 @@
 <?php
 
-// TODO
-add_action('init', function()
+class WPTurbo
 {
-	if(! is_admin() && $GLOBALS['pagenow'] !== 'wp-login.php') {
+    public function __construct() {
+        add_action('init', [&$this, 'action_init']);
+        add_action('woocommerce_before_add_to_cart_button', [&$this, 'action_woocommerce_before_add_to_cart_button'], 100, 0 );
+        add_action('wp_footer', [&$this, 'action_wp_footer']);
+    }
 
-		if (! is_user_logged_in()) {
-			wp_redirect( 'http://www.paperstories.eu');
-			exit;
-		}
+    public function action_init() {
+        // maintenance mode = redirect visitors if they are not logged in
+        if(! is_admin() && $GLOBALS['pagenow'] !== 'wp-login.php') {
+            if (! is_user_logged_in()) {
+                wp_redirect( 'http://www.paperstories.eu');
+                exit;
+            }
+        }
+    }
 
-	}
-});
+    public function action_wp_footer() {
+        ?>
+        <script>
+            jQuery(document).ready(function() {
+                //function OrderSampleOnclickEventListener() {
+                let addSampleProductToCartButton = document.getElementById("addSampleProductToCart");
+                addSampleProductToCartButton.addEventListener('click', function(){
+                    addSampleProductToCartButton.setAttribute("disabled", true);
+                        document.body.style.cursor = 'progress';
+                        jQuery.ajax({
+                      url: "/?add-to-cart=1799&quantity=1",
+                    })
+                    .done(function( data ) {
+                        document.body.style.cursor = 'default';
+                        alert("Mintatermék bekerült a kosarába!");
+                        addSampleProductToCartButton.removeAttribute("disabled");
+                    });
+                });
+                //}
+            });
+        </script>
+        <?php
+    }
+
+    public function action_woocommerce_before_add_to_cart_button() {
+        // define the woocommerce_before_add_to_cart_button callback
+        global $product;
+        $sampleSKU = $product->get_sku().'-minta';
+        $sampleProduct = wc_get_product_id_by_sku($sampleSKU);
+        if ($sampleProduct) {
+            echo '<button type="button" id="addSampleProductToCart" class="custom-btn white-border">Mintakártya</button>';
+        }
+    }
+}
+new WPTurbo();
+
+
+
+
+
+
+
+
 
 add_action( 'wp_enqueue_scripts', 'theseven_child_scripts');
 function theseven_child_scripts() {
