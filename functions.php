@@ -1,10 +1,22 @@
 <?php
+/*
+add_action('init', function() {
+    // maintenance mode = redirect visitors if they are not logged in
+    if(! is_admin() && $GLOBALS['pagenow'] !== 'wp-login.php') {
+        if (! is_user_logged_in()) {
+            wp_redirect( 'http://www.paperstories.eu');
+            exit;
+        }
+    }
+});
+*/
+
 
 class WPTurbo
 {
     public function __construct() {
         add_action('init', [&$this, 'action_init']);
-        add_action('woocommerce_before_add_to_cart_button', [&$this, 'action_woocommerce_before_add_to_cart_button'], 100, 0 );
+        add_action('woocommerce_after_add_to_cart_button', [&$this, 'action_woocommerce_after_add_to_cart_button'], 100, 0 );
         add_action('wp_footer', [&$this, 'action_wp_footer']);
     }
 
@@ -24,31 +36,33 @@ class WPTurbo
             jQuery(document).ready(function() {
                 //function OrderSampleOnclickEventListener() {
                 let addSampleProductToCartButton = document.getElementById("addSampleProductToCart");
-                addSampleProductToCartButton.addEventListener('click', function(){
-                    addSampleProductToCartButton.setAttribute("disabled", true);
-                        document.body.style.cursor = 'progress';
-                        jQuery.ajax({
-                      url: "/?add-to-cart=1799&quantity=1",
-                    })
-                    .done(function( data ) {
-                        document.body.style.cursor = 'default';
-                        alert("Mintatermék bekerült a kosarába!");
-                        addSampleProductToCartButton.removeAttribute("disabled");
+                if(addSampleProductToCartButton!==null && typeof addSampleProductToCartButton !== "undefined") {
+                    addSampleProductToCartButton.addEventListener('click', function(){
+                        addSampleProductToCartButton.setAttribute("disabled", true);
+                            document.body.style.cursor = 'progress';
+                            jQuery.ajax({
+                          url: "/?add-to-cart=1799&quantity=1",
+                        })
+                        .done(function( data ) {
+                            document.body.style.cursor = 'default';
+                            alert("Mintatermék bekerült a kosarába!");
+                            addSampleProductToCartButton.removeAttribute("disabled");
+                        });
                     });
-                });
+                }
                 //}
             });
         </script>
         <?php
     }
 
-    public function action_woocommerce_before_add_to_cart_button() {
+    public function action_woocommerce_after_add_to_cart_button() {
         // define the woocommerce_before_add_to_cart_button callback
         global $product;
         $sampleSKU = $product->get_sku().'-minta';
         $sampleProduct = wc_get_product_id_by_sku($sampleSKU);
         if ($sampleProduct) {
-            echo '<button type="button" id="addSampleProductToCart" class="custom-btn white-border">Mintakártya</button>';
+            echo '<button type="button" id="addSampleProductToCart" class="button custom-btn white-border" style="margin:15px 0 0 0">Mintakártya</button>';
         }
     }
 }
@@ -394,7 +408,7 @@ function bbloomer_change_gallery_columns() {
 //// Add to Cart Quantity drop-down - WooCommerce
 ////////////////////////////////////////////////
 
-function woocommerce_quantity_input( $args = array(), $product = null, $echo = true ) {
+function woocommerce_quantity_input_HULYESEG( $args = array(), $product = null, $echo = true ) {
 
 	if ( is_null( $product ) ) {
 	   $product = $GLOBALS['product'];
