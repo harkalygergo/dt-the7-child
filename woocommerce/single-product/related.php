@@ -31,7 +31,9 @@ if ( ! defined( 'ABSPATH' ) ) {
         'post_status' => 'publish',
 		'post__not_in' => [$product->get_id()],
         'title'    => $product->get_title(),
-        'posts_per_page' => -1
+        'posts_per_page' => -1,
+        'orderby' => 'date',
+        'order' => 'ASC',
     ]);
     $sameNameProducts = $sameNameProducts->get_products();
 	if (!empty($sameNameProducts)) : ?>
@@ -95,6 +97,7 @@ if ( $related_products ) : ?>
 		// TODO function.php function woocommerce_quantity_input
 		// TODO számlázz.hu összekötés
 		// TODO GLS összekötés
+        // TODO számlázzzhuról levél, automatikus számlázás kell vagy manuális és Agent kulcs kell vagy hozzáférés
 		$heading = apply_filters( 'woocommerce_product_related_products_heading', __( 'Related products', 'the7mk2' ) );
 
 		if ( $heading ) :

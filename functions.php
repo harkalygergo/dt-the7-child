@@ -11,6 +11,11 @@ add_action('init', function() {
 });
 */
 
+// TODO plusminus levenni
+// TODO Formátum attribútumnál a Leírás mezőt kijelezni Információk alatt
+// TODO formátum váltásnál változik a Méret és a Oldalak száma
+// TODO minta popup oldalból vagy kupon leírásból
+// TODO minta termékadatlapot irányítsuk vissza az eredeti termékre
 
 class WPTurbo
 {
