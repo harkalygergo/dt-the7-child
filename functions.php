@@ -21,7 +21,8 @@ class WPTurbo
 {
     public function __construct() {
         add_action('init', [&$this, 'action_init']);
-        add_action('woocommerce_after_add_to_cart_button', [&$this, 'action_woocommerce_after_add_to_cart_button'], 100, 0 );
+        add_action('template_redirect', [&$this, 'action_template_redirect'], 99);
+        add_action('woocommerce_after_add_to_cart_button', [&$this, 'action_woocommerce_after_add_to_cart_button'], 100, 0);
         add_action('wp_footer', [&$this, 'action_wp_footer']);
     }
 
@@ -30,6 +31,21 @@ class WPTurbo
         if(! is_admin() && $GLOBALS['pagenow'] !== 'wp-login.php') {
             if (! is_user_logged_in()) {
                 wp_redirect( 'http://www.paperstories.eu');
+                exit;
+            }
+        }
+    }
+
+    public function action_template_redirect() {
+        if ( is_product() ) {
+            /** @var WC_Product $productObject  */
+            $productObject = wc_get_product(get_queried_object_id());
+            $productObjectSKU = $productObject->get_sku();
+            if (str_contains($productObjectSKU, '-minta')) {
+                $mainProductSKU = str_replace('-minta', '', $productObjectSKU);
+                $mainProduct = wc_get_product_id_by_sku($mainProductSKU);
+                $sampleProduct = wc_get_product($mainProduct);
+                wp_safe_redirect( $sampleProduct->get_slug() );
                 exit;
             }
         }
