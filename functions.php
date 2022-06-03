@@ -1,21 +1,9 @@
 <?php
-/*
-add_action('init', function() {
-    // maintenance mode = redirect visitors if they are not logged in
-    if(! is_admin() && $GLOBALS['pagenow'] !== 'wp-login.php') {
-        if (! is_user_logged_in()) {
-            wp_redirect( 'http://www.paperstories.eu');
-            exit;
-        }
-    }
-});
-*/
 
-// TODO plusminus levenni
 // TODO Formátum attribútumnál a Leírás mezőt kijelezni Információk alatt
 // TODO formátum váltásnál változik a Méret és a Oldalak száma
 // TODO minta popup oldalból vagy kupon leírásból
-// TODO minta termékadatlapot irányítsuk vissza az eredeti termékre
+// TODO GLS összekötés
 
 class WPTurbo
 {

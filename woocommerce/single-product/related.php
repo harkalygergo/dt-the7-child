@@ -89,15 +89,6 @@ if ( $related_products ) : ?>
     <section class="related products">
 
 		<?php
-		// TODO további termékei
-		// TODO lábléc menükből
-		// TODO Minta termék kosárba
-		// TODO gyik oldalsáv
-		// TODO https://www.paperstories.hu/termek/em01-0039-c/
-		// TODO function.php function woocommerce_quantity_input
-		// TODO számlázz.hu összekötés
-		// TODO GLS összekötés
-        // TODO számlázzzhuról levél, automatikus számlázás kell vagy manuális és Agent kulcs kell vagy hozzáférés
 		$heading = apply_filters( 'woocommerce_product_related_products_heading', __( 'Related products', 'the7mk2' ) );
 
 		if ( $heading ) :
