@@ -41,8 +41,41 @@ class WPTurbo
 
     public function action_wp_footer() {
         ?>
+        <style>
+            #popup {
+                background-color: white;
+                text-align: center;
+                color: black;
+                z-index: 10000000;
+                position: fixed;
+                display: flex;
+                width: 50%;
+                margin: 10% 25%;
+                border: 1px solid lightgray;
+            }
+            #popup p {
+                text-align: right;
+                padding:8px;
+            }
+            #popup .popup-content {
+                padding: 50px;
+            }
+        </style>
+        <div id="popup" style="display: none;">
+            <p onclick="document.getElementById('popup').style.display='none';">X</p>
+            <div class="popup-content">
+                <?php echo get_the_excerpt(1911); ?>
+                <hr>
+                <a href="" type="button" class="button alt">További részletek</a>
+                <button type="button" id="addSampleProductToCart" class="button custom-btn white-border" style="margin:15px 0 0 0">Mintakártya kosárba</button>
+            </div>
+        </div>
         <script>
+            document.getElementById("page").appendChild(document.getElementById("popup"));
             jQuery(document).ready(function() {
+                document.getElementById("showSampleProductPopup").addEventListener("click", function(){
+                    document.getElementById("popup").style.display = "block";
+                });
                 //function OrderSampleOnclickEventListener() {
                 let addSampleProductToCartButton = document.getElementById("addSampleProductToCart");
                 if(addSampleProductToCartButton!==null && typeof addSampleProductToCartButton !== "undefined") {
@@ -71,7 +104,8 @@ class WPTurbo
         $sampleSKU = $product->get_sku().'-minta';
         $sampleProduct = wc_get_product_id_by_sku($sampleSKU);
         if ($sampleProduct) {
-            echo '<button type="button" id="addSampleProductToCart" class="button custom-btn white-border" style="margin:15px 0 0 0">Mintakártya</button>';
+            //echo '<button type="button" id="addSampleProductToCart" class="button custom-btn white-border" style="margin:15px 0 0 0">Mintakártya</button>';
+            echo '<button type="button" id="showSampleProductPopup" class="button custom-btn white-border" style="margin:15px 0 0 0">Mintakártya</button>';
         }
     }
 }
