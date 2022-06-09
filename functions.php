@@ -506,6 +506,22 @@ add_action('woocommerce_before_single_product', 'remove_single_product_elements'
 add_shortcode('woocommerce_product_info_shortcode', 'woocommerce_product_info');
 
 function woocommerce_product_info($atts) {
+    /** @var WC_Product_Variable $product*/
+    /*
+    global $product;
+    $variationAttributes = $product->get_variation_attributes();
+    $pa_formats = $variationAttributes['pa_format'];
+    ?>
+    <script>
+          document.getElementById('pa_format').addEventListener('change', (event) => {
+              alert(event.target.value);
+              alert(document.getElementById('pa_format').value);
+              //const result = document.querySelector('.result');
+              //result.textContent = `You like ${event.target.value}`;
+        });
+    </script>
+    <?php
+    */
 
    $meret = get_field('meret');
    $papir = get_field('papir');
