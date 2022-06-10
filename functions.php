@@ -42,6 +42,10 @@ class WPTurbo
     public function action_wp_footer() {
         ?>
         <style>
+            .variations td.value {
+                text-align: left;
+            }
+
             #popup {
                 background-color: white;
                 text-align: center;
@@ -53,21 +57,25 @@ class WPTurbo
                 margin: 10% 25%;
                 border: 1px solid lightgray;
             }
-            #popup p {
+            #popup p.exit {
                 text-align: right;
-                padding:8px;
+                padding: 16px;
             }
             #popup .popup-content {
-                padding: 50px;
+                padding: 25px 50px 50px 50px;
+            }
+
+            @media only screen and (max-width: 800px) {
+                #popup {
+                    width: 80%;
+                    margin: 10%;
+                }
             }
         </style>
         <div id="popup" style="display: none;">
-            <p onclick="document.getElementById('popup').style.display='none';">X</p>
+            <p class="exit" onclick="document.getElementById('popup').style.display='none';">X</p>
             <div class="popup-content">
                 <?php echo get_the_excerpt(1911); ?>
-                <hr>
-                <a href="" type="button" class="button alt">További részletek</a>
-                <button type="button" id="addSampleProductToCart" class="button custom-btn white-border" style="margin:15px 0 0 0">Mintakártya kosárba</button>
             </div>
         </div>
         <script>
@@ -562,7 +570,7 @@ function woocommerce_product_info($atts) {
    $oldalak = get_field('szerkesztheto_oldalak');
    $online = get_field('online_szerkesztes');
 
-   echo '<div class="prod-info-box"><span>INFORMÁCIÓ</span><ul><li>Méret: '. $meret .'</li><li>Papír: '. $papir .'</li><li>Szerkeszthető: '. $oldalak .'</li><li>Online szerkesztés díjtalan</li></ul></div>';
+   echo '<div class="prod-info-box"><span>INFORMÁCIÓ</span><ul><!--li>Méret: '. $meret .'</li--><li>Papír: '. $papir .'</li><li>Szerkeszthető: '. $oldalak .'</li><li>Online szerkesztés díjtalan</li></ul></div>';
 }
 add_action( 'woocommerce_single_product_summary', 'woocommerce_product_info', 50 );
 
