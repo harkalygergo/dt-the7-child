@@ -1,23 +1,35 @@
 <?php
 
-// TODO Formátum attribútumnál a Leírás mezőt kijelezni Információk alatt
-// TODO formátum váltásnál változik a Méret és a Oldalak száma
-// TODO minta popup oldalból vagy kupon leírásból
 // TODO GLS összekötés
+// TODO SKU változtatás a Kosárba rakom gomb felett / alatt formátum váltáskor
 
 class WPTurbo
 {
-    public function __construct() {
+    public function __construct()
+    {
         add_action('init', [&$this, 'action_init']);
         add_action('template_redirect', [&$this, 'action_template_redirect'], 99);
         add_action('woocommerce_after_add_to_cart_button', [&$this, 'action_woocommerce_after_add_to_cart_button'], 100, 0);
         add_action('wp_footer', [&$this, 'action_wp_footer']);
+
+        add_filter('woocommerce_variation_option_name', [&$this, 'filter_woocommerce_variation_option_name'], 10, 1);
+    }
+
+    public function filter_woocommerce_variation_option_name($termName)
+    {
+        $term = get_term_by('name', $termName, 'pa_format');
+
+        if (!is_null($term) && !is_null($term->description)) {
+            return $termName.' | szerkeszthető: '.$term->description;
+        }
+
+        return $termName;
     }
 
     public function action_init() {
         // maintenance mode = redirect visitors if they are not logged in
         if(! is_admin() && $GLOBALS['pagenow'] !== 'wp-login.php') {
-            if (! is_user_logged_in()) {
+            if (! is_user_logged_in() && 0==get_option( 'blog_public')) {
                 wp_redirect( 'http://www.paperstories.eu');
                 exit;
             }
@@ -438,12 +450,17 @@ add_action( 'woocommerce_before_main_content', 'prod_filter', 1 );
 ////////////////////////////////////////////////
 //// Product filter button
 ////////////////////////////////////////////////
+/*
+ * TODO
+ * 2022.06.14-én Laura és Gergő egyeztetése alapján kérésre a Szűrés gomb lekerül, Gergő javaslatára v2-ben kerül vissza,
+ * amikor az adott variáció képe jelenik meg, nem a featured image.
 add_shortcode('display_prod_filter_button', 'prod_filter_button');
 
    function prod_filter_button ( $atts ) {
       echo '<div class="filter-btn-box"><a href="#" class="custom-btn white filter-btn">SZŰRÉS <svg style="width: 32px;vertical-align: middle;" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><style>.cls-1{fill:none;stroke:#38383d;stroke-miterlimit:10;stroke-width:4.5px;}</style></defs><title>weboldal ikonok</title><circle class="cls-1" cx="62.02" cy="67.44" r="10.85"/><line class="cls-1" x1="51.16" y1="67.44" x2="40.31" y2="67.44"/><line class="cls-1" x1="72.87" y1="67.44" x2="159.69" y2="67.44"/><circle class="cls-1" cx="89.15" cy="132.56" r="10.85"/><line class="cls-1" x1="78.3" y1="132.56" x2="40.31" y2="132.56"/><line class="cls-1" x1="100" y1="132.56" x2="159.69" y2="132.56"/><circle class="cls-1" cx="137.99" cy="100" r="10.85"/><line class="cls-1" x1="148.84" y1="100" x2="159.69" y2="100"/><line class="cls-1" x1="127.13" y1="100" x2="40.31" y2="100"/></svg></a></div>';
    }
 add_action( 'woocommerce_before_shop_loop', 'prod_filter_button', 10 );
+*/
 
 ////////////////////////////////////////////////
 //// Single Product gallery
@@ -569,8 +586,9 @@ function woocommerce_product_info($atts) {
    $papir = get_field('papir');
    $oldalak = get_field('szerkesztheto_oldalak');
    $online = get_field('online_szerkesztes');
+   $the_content = apply_filters('the_content', get_the_content());
 
-   echo '<div class="prod-info-box"><span>INFORMÁCIÓ</span><ul><!--li>Méret: '. $meret .'</li--><li>Papír: '. $papir .'</li><li>Szerkeszthető: '. $oldalak .'</li><li>Online szerkesztés díjtalan</li></ul></div>';
+   echo '<div class="prod-info-box"><span>INFORMÁCIÓ</span><ul><!--li>Méret: '. $meret .'</li--><li>Papír: '. $papir .'</li><li>Online szerkesztés díjtalan</li></ul>'.$the_content.'</div>';
 }
 add_action( 'woocommerce_single_product_summary', 'woocommerce_product_info', 50 );
 
