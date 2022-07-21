@@ -8,11 +8,77 @@ class WPTurbo
     public function __construct()
     {
         add_action('init', [&$this, 'action_init']);
+        add_action('rest_api_init', [$this, 'action_rest_api_init']);
         add_action('template_redirect', [&$this, 'action_template_redirect'], 99);
         add_action('woocommerce_after_add_to_cart_button', [&$this, 'action_woocommerce_after_add_to_cart_button'], 100, 0);
         add_action('wp_footer', [&$this, 'action_wp_footer']);
 
         add_filter('woocommerce_variation_option_name', [&$this, 'filter_woocommerce_variation_option_name'], 10, 1);
+    }
+
+    public function action_rest_api_init()
+    {
+        register_rest_route('alma', 'banan', [
+            'methods'   => 'GET',
+            'callback'  => [$this, 'alma']
+        ]);
+    }
+
+    public function alma()
+    {
+        /*
+        curl -X POST 'https://paperstories-eu-pbx2.getprintbox.com/o/token/' \
+        -F 'grant_type=client_credentials' \
+        -F 'client_id=CLIENT_ID' \
+        -F 'client_secret=CLIENT_SECRET'
+        */
+        // cliendID bi3yN91sGdl2zfNtABmTKQjZRPmK1TM8UA7nycY1
+        // client secret uSt1ZYoqOzV7zY7Zl3nV2WzzZwizBANmfmMcrT0KKuvHNttgZMSUFYGU4ABLoQkvpeUxpaDEa4CKrZDJwT0g6XJk66za4sUqw1eA0IwNyHRCLvs0IBListlTa8O9TZyk
+        // create curl resource
+        $ch = curl_init();
+
+        // set url
+        curl_setopt($ch, CURLOPT_URL, "https://paperstories-eu-pbx2.getprintbox.com/o/token/");
+
+        //return the transfer as a string
+        //curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        curl_setopt_array ( $ch, array (
+            CURLOPT_POST => 1,
+            CURLOPT_POSTFIELDS => array (
+                'grant_type' => 'client_credentials',
+                'client_id' => 'bi3yN91sGdl2zfNtABmTKQjZRPmK1TM8UA7nycY1',
+                'client_secret' => 'uSt1ZYoqOzV7zY7Zl3nV2WzzZwizBANmfmMcrT0KKuvHNttgZMSUFYGU4ABLoQkvpeUxpaDEa4CKrZDJwT0g6XJk66za4sUqw1eA0IwNyHRCLvs0IBListlTa8O9TZyk'
+            )
+        ) );
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+
+        // $output contains the output string
+        $output = curl_exec($ch);
+        $result = json_decode($output, true);
+
+        // close curl resource to free up system resources
+        curl_close($ch);
+
+        // For example a curl request listing all product families will look like this:
+        // curl https://paperstories-eu-pbx2.getprintbox.com/api/ec/v4/product-families/ -X 'Authorization: Bearer TOKEN'
+
+        $crl = curl_init("https://paperstories-eu-pbx2.getprintbox.com/api/ec/v4/product-families/");
+        $header = array();
+        $header[] = 'Content-length: 0';
+        $header[] = 'Content-type: application/json';
+        $header[] = 'Authorization: Bearer '.$result['access_token'];
+
+        curl_setopt($crl, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($crl, CURLOPT_HTTPHEADER,$header);
+        //curl_setopt($crl, CURLOPT_POST,true);
+        $rest = curl_exec($crl);
+        curl_close($crl);
+        print_r($rest);
+        exit;
+
+
+        wp_send_json($result['access_token'], 200);
     }
 
     public function filter_woocommerce_variation_option_name($termName)
