@@ -3,6 +3,12 @@
 // TODO GLS összekötés
 // TODO SKU változtatás a Kosárba rakom gomb felett / alatt formátum váltáskor
 
+
+
+
+
+
+
 class WPTurbo
 {
     public function __construct()
@@ -14,6 +20,44 @@ class WPTurbo
         add_action('wp_footer', [&$this, 'action_wp_footer']);
 
         add_filter('woocommerce_variation_option_name', [&$this, 'filter_woocommerce_variation_option_name'], 10, 1);
+
+        // Variable
+        add_filter('woocommerce_product_variation_get_regular_price', [&$this, 'custom_price'], 99, 2 );
+        add_filter('woocommerce_product_variation_get_price', [&$this, 'custom_price'], 99, 2 );
+
+        // Variations (of a variable product)
+        //add_filter('woocommerce_variation_prices_price', [&$this, 'custom_price'], 99, 3 );
+        //add_filter('woocommerce_variation_prices_regular_price', [&$this, 'custom_price'], 99, 3 );
+
+        add_filter( 'woocommerce_available_variation', [$this, 'my_variation'], 100, 3);
+
+        // Variations (of a variable product)
+        //add_filter( 'woocommerce_variation_prices_price', [&$this, 'my_variation'], 99, 3);
+        //add_filter( 'woocommerce_variation_prices_regular_price', [&$this, 'my_variation'], 99, 3);
+        //add_filter( 'woocommerce_available_variation', [&$this, 'my_variation'], 10, 3);
+    }
+
+    private function dump(mixed $variable)
+    {
+        echo '<pre>';
+        print_r($variable);
+        echo '</pre>';
+        //exit;
+    }
+
+    public function custom_price( $price, $product) {
+        $valasztottMennyiseg = (int) $product->get_attributes()['mennyiseg'];
+
+        return $this->getAr($valasztottMennyiseg)*$valasztottMennyiseg;
+    }
+
+    public function my_variation( $data, $product, $variation ) {
+        $valasztottMennyiseg = (int) $variation->get_variation_attributes()['attribute_mennyiseg'];
+
+        $data['price_html'] = '<span class="price">'.$variation->get_price_html().'</span>'; //'<span class="price"><span class="woocommerce-Price-amount amount"><bdi>'.wc_price($data['display_price']).'<span class="woocommerce-Price-currencySymbol">&#70;&#116;</span></bdi></span></span>';
+        $data['variation_description'] = '<p>'.wc_price($this->getAr($valasztottMennyiseg)).'/db</p>';
+
+        return $data;
     }
 
     public function action_rest_api_init()
@@ -24,61 +68,96 @@ class WPTurbo
         ]);
     }
 
-    public function alma()
+    private function sendCurl($url='', $opt=[], $header=[])
     {
-        /*
-        curl -X POST 'https://paperstories-eu-pbx2.getprintbox.com/o/token/' \
-        -F 'grant_type=client_credentials' \
-        -F 'client_id=CLIENT_ID' \
-        -F 'client_secret=CLIENT_SECRET'
-        */
-        // cliendID bi3yN91sGdl2zfNtABmTKQjZRPmK1TM8UA7nycY1
-        // client secret uSt1ZYoqOzV7zY7Zl3nV2WzzZwizBANmfmMcrT0KKuvHNttgZMSUFYGU4ABLoQkvpeUxpaDEa4CKrZDJwT0g6XJk66za4sUqw1eA0IwNyHRCLvs0IBListlTa8O9TZyk
-        // create curl resource
         $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt_array($ch, $opt);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        // return the transfer as a string
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $result = curl_exec($ch);
+        curl_close($ch);
 
-        // set url
-        curl_setopt($ch, CURLOPT_URL, "https://paperstories-eu-pbx2.getprintbox.com/o/token/");
+        return $result;
+    }
 
-        //return the transfer as a string
-        //curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        curl_setopt_array ( $ch, array (
+    private function getPrintBoxToken(): array
+    {
+        $opt = [
             CURLOPT_POST => 1,
-            CURLOPT_POSTFIELDS => array (
+            CURLOPT_POSTFIELDS => [
                 'grant_type' => 'client_credentials',
                 'client_id' => 'bi3yN91sGdl2zfNtABmTKQjZRPmK1TM8UA7nycY1',
                 'client_secret' => 'uSt1ZYoqOzV7zY7Zl3nV2WzzZwizBANmfmMcrT0KKuvHNttgZMSUFYGU4ABLoQkvpeUxpaDEa4CKrZDJwT0g6XJk66za4sUqw1eA0IwNyHRCLvs0IBListlTa8O9TZyk'
-            )
-        ) );
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            ]
+        ];
+        $result = $this->sendCurl('https://paperstories-eu-pbx2.getprintbox.com/o/token/', $opt);
 
-        // $output contains the output string
-        $output = curl_exec($ch);
-        $result = json_decode($output, true);
+        return json_decode($result, true);
+    }
 
-        // close curl resource to free up system resources
-        curl_close($ch);
+    private function getAr(int $mennyiseg)
+    {
+        $arak = [
+            'decreasing' => [
+                'leiras' => 'meghívók, ültető- és köszönőkártyák, stb.',
+                'db' => [10,15,20,25,30,35],
+                'meret' => [
+                    '145X145' => [890,890,790,750,750,700],
+                    '170X120' => [890,890,790,750,750,700],
+                    '175X115' => [730,730,650,615,615,575]
+                ]
+            ],
+            'fix' => [
+                'leiras' => 'poszter',
+                'db' => [1,2,3,4,5,6],
+                'meret' => [
+                    '300X400' => [5490,5490,5490,5490,5490,5490],
+                    '400X300' => [5490,5490,5490,5490,5490,5490]
+                ]
+            ],
+            '10by10' => [
+                'leiras' => 'boriték matrica, ajándék cimke',
+                'db' => [10,20,30,40,50,60],
+                'meret' => [
+                    '45X45' => [130,130,130,130,130,130],
+                    '50X70' => [310,275,265,245,240,"234,5"]
+                ]
+            ],
+            '1by1' => [
+                'leiras' => 'asztalszám, ültetési rend',
+                'db' => [1,2,3,4,5,6],
+                'meret' => [
+                    '105X145' => [1615, 1517, 1419,1321,1223,1125],
+                    '140X205' => [1615, 1517, 1419,1321,1223,1125]
+                ]
+            ],
+        ];
+        $mennyisegKey = array_search($mennyiseg, $arak['decreasing']['db']);
+        $darabar = $arak['decreasing']['meret']['170X120'][$mennyisegKey];
 
-        // For example a curl request listing all product families will look like this:
-        // curl https://paperstories-eu-pbx2.getprintbox.com/api/ec/v4/product-families/ -X 'Authorization: Bearer TOKEN'
+        return $darabar;
+        //return $arak;
+    }
 
-        $crl = curl_init("https://paperstories-eu-pbx2.getprintbox.com/api/ec/v4/product-families/");
-        $header = array();
+    public function alma()
+    {
+        /*
+        $ar = $this->getAr(21);
+        echo json_encode($ar, JSON_UNESCAPED_UNICODE);
+        exit;
+        */
+
+        $result = $this->getPrintBoxToken();
+
+        $header = [];
         $header[] = 'Content-length: 0';
         $header[] = 'Content-type: application/json';
         $header[] = 'Authorization: Bearer '.$result['access_token'];
+        $rest = $this->sendCurl('https://paperstories-eu-pbx2.getprintbox.com/api/ec/v4/product-families/', [], $header);
 
-        curl_setopt($crl, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($crl, CURLOPT_HTTPHEADER,$header);
-        //curl_setopt($crl, CURLOPT_POST,true);
-        $rest = curl_exec($crl);
-        curl_close($crl);
-        print_r($rest);
-        exit;
-
-
-        wp_send_json($result['access_token'], 200);
+        wp_send_json(json_decode($rest, true), 200);
     }
 
     public function filter_woocommerce_variation_option_name($termName)
@@ -195,7 +274,7 @@ class WPTurbo
         }
     }
 }
-new WPTurbo();
+$WPTurbo = new WPTurbo();
 
 
 
