@@ -42,20 +42,24 @@ class WPTurbo
         echo '<pre>';
         print_r($variable);
         echo '</pre>';
-        //exit;
+        exit;
     }
 
     public function custom_price( $price, $product) {
-        $valasztottMennyiseg = (int) $product->get_attributes()['mennyiseg'];
+        $productAttributes = $product->get_attributes();
+        $valasztottMennyiseg = (int) $productAttributes['mennyiseg'];
+        $format = $productAttributes['pa_format'];
 
-        return $this->getAr($valasztottMennyiseg)*$valasztottMennyiseg;
+        return $this->getAr($valasztottMennyiseg, $format)*$valasztottMennyiseg;
     }
 
     public function my_variation( $data, $product, $variation ) {
-        $valasztottMennyiseg = (int) $variation->get_variation_attributes()['attribute_mennyiseg'];
+        $variationAttributes = $variation->get_variation_attributes();
+        $valasztottMennyiseg = (int) $variationAttributes['attribute_mennyiseg'];
+        $format = $variationAttributes['attribute_pa_format'];
 
         $data['price_html'] = '<span class="price">'.$variation->get_price_html().'</span>'; //'<span class="price"><span class="woocommerce-Price-amount amount"><bdi>'.wc_price($data['display_price']).'<span class="woocommerce-Price-currencySymbol">&#70;&#116;</span></bdi></span></span>';
-        $data['variation_description'] = '<p>'.wc_price($this->getAr($valasztottMennyiseg)).'/db</p>';
+        $data['variation_description'] = '<p>'.wc_price($this->getAr($valasztottMennyiseg, $format)).'/db</p>';
 
         return $data;
     }
@@ -97,16 +101,16 @@ class WPTurbo
         return json_decode($result, true);
     }
 
-    private function getAr(int $mennyiseg)
+    private function getAr(int $mennyiseg=1, string $meret='')
     {
         $arak = [
             'decreasing' => [
                 'leiras' => 'meghívók, ültető- és köszönőkártyák, stb.',
                 'db' => [10,15,20,25,30,35],
                 'meret' => [
-                    '145X145' => [890,890,790,750,750,700],
-                    '170X120' => [890,890,790,750,750,700],
-                    '175X115' => [730,730,650,615,615,575]
+                    '145-x-145-mm' => [890,890,790,750,750,700],
+                    '170-x-120-mm' => [890,890,790,750,750,700],
+                    '175-x-115-mm' => [730,730,650,615,615,575]
                 ]
             ],
             'fix' => [
@@ -135,7 +139,7 @@ class WPTurbo
             ],
         ];
         $mennyisegKey = array_search($mennyiseg, $arak['decreasing']['db']);
-        $darabar = $arak['decreasing']['meret']['170X120'][$mennyisegKey];
+        $darabar = $arak['decreasing']['meret'][$meret][$mennyisegKey];
 
         return $darabar;
         //return $arak;
